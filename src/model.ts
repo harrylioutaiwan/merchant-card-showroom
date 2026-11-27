@@ -1,19 +1,31 @@
 export type Layout = 'grid' | 'list';
+export type CardKind = 'ranking' | 'flash-sale' | 'search';
 
-export interface Product {
+interface ProductDetails {
   id: string;
   name: string;
-  category: string;
   imageUrl: string;
-  price: { amount: number; kind: 'fixed' | 'from'; original?: number };
+  price: { amount: number; original?: number };
   promotion?: string;
+  campaign?: string;
   rating?: { score: number; count: number };
 }
 
+export type Product = ProductDetails & (
+  | { kind: 'ranking'; rank: number; sold: string }
+  | { kind: 'flash-sale'; stock: number }
+  | { kind: 'search'; sponsored?: boolean; priceNote?: string; shipping?: string; tags: string[]; sold?: string }
+);
+
 export const displayFields = [
   { key: 'showOriginalPrice', label: '顯示原價' },
-  { key: 'showPromotion', label: '顯示促銷標籤' },
+  { key: 'showPromotion', label: '顯示促銷文案' },
   { key: 'showRating', label: '顯示評價' },
+  { key: 'showRank', label: '顯示排名' },
+  { key: 'showSold', label: '顯示銷量' },
+  { key: 'showStock', label: '顯示剩餘組數' },
+  { key: 'showShipping', label: '顯示配送' },
+  { key: 'showTags', label: '顯示活動標籤' },
 ] as const;
 
 export type DisplayKey = (typeof displayFields)[number]['key'];
@@ -23,10 +35,35 @@ export const defaultSettings: Readonly<DisplaySettings> = Object.freeze({
   showOriginalPrice: true,
   showPromotion: true,
   showRating: true,
+  showRank: true,
+  showSold: true,
+  showStock: true,
+  showShipping: true,
+  showTags: true,
 });
+
+export interface ProductOverrides {
+  name?: string;
+  price?: number;
+  promotion?: string;
+}
+
+export interface CardConfiguration {
+  overrides: ProductOverrides;
+  settings: DisplaySettings;
+}
+
+export function applyOverrides(product: Product, overrides: ProductOverrides): Product {
+  return {
+    ...product,
+    name: overrides.name ?? product.name,
+    price: { ...product.price, amount: overrides.price ?? product.price.amount },
+    promotion: overrides.promotion ?? product.promotion,
+  };
+}
 
 const twd = new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 0 });
 
 export function formatPrice(amount: number): string {
-  return `NT$ ${twd.format(amount)}`;
+  return `$${twd.format(amount)}`;
 }

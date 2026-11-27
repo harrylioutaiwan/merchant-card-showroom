@@ -3,71 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="瀏覽商品卡，調整展示設定，並在獨立 HTML 中重用元件。">
-  <title>商品卡總覽 · Merchant Card Showroom</title>
-  <link rel="stylesheet" href="./showroom.css">
-  <script type="module" src="./js/showroom.js"></script>
+  <meta name="description" content="瀏覽、調整與重用參考 momo 電商場景的商品卡。">
+  <title>Merchant Card Showroom</title>
 </head>
 <body>
-  <header class="site-header">
-    <div class="shell header-content">
-      <a class="wordmark" href="./index.html"><span class="brand-mark" aria-hidden="true"></span> Merchant Card Showroom</a>
-      <nav aria-label="主要導覽">
-        <a href="./index.html" aria-current="page">商品卡總覽</a>
-        <a href="./sample.html">嵌入範例</a>
-      </nav>
-    </div>
-  </header>
-  <main class="shell" id="main">
-    <section id="overview" hidden>
-      <div class="intro">
-        <h1>商品卡總覽</h1>
-        <p>切換方格或橫列比較卡片，或選擇商品來調整它的展示設定。</p>
-      </div>
-      <div class="toolbar">
-        <p id="card-count"></p>
-        <div class="segmented" role="group" aria-label="總覽版型">
-          <button type="button" data-layout="grid" aria-pressed="true"><span class="grid-icon" aria-hidden="true"></span>方格</button>
-          <button type="button" data-layout="list" aria-pressed="false"><span class="list-icon" aria-hidden="true"></span>橫列</button>
-        </div>
-      </div>
-      <ul class="cards" id="cards"></ul>
-    </section>
-    <section id="detail" hidden>
-      <div class="detail-intro">
-        <a class="back-link" href="./index.html">返回商品卡總覽</a>
-        <h1 id="detail-title"></h1>
-      </div>
-      <div class="editor">
-        <section class="preview" aria-labelledby="preview-title">
-          <div class="preview-heading">
-            <h2 id="preview-title">即時預覽</h2>
-            <div class="segmented" role="group" aria-label="預覽版型">
-              <button type="button" data-layout="grid" aria-pressed="true"><span class="grid-icon" aria-hidden="true"></span>方格</button>
-              <button type="button" data-layout="list" aria-pressed="false"><span class="list-icon" aria-hidden="true"></span>橫列</button>
-            </div>
-          </div>
-          <div id="preview-frame" class="preview-frame">
-            <merchant-card id="preview-card"></merchant-card>
-          </div>
-        </section>
-        <section class="settings" aria-labelledby="settings-title">
-          <h2 id="settings-title">展示設定</h2>
-          <p>變更會套用到預覽，並儲存在此瀏覽器。</p>
-          <form id="settings-form">
-            <div id="settings-fields"></div>
-            <button type="button" class="secondary" id="reset">重設為預設值</button>
-            <p id="save-status" class="status" role="status"></p>
-          </form>
-        </section>
-      </div>
-    </section>
-    <section class="empty" id="missing" hidden>
-      <h1>找不到這張商品卡</h1>
-      <p>請回總覽選擇一張可編輯的卡片。</p>
-      <a class="back-link" href="./index.html">返回商品卡總覽</a>
-    </section>
-    <noscript>請啟用 JavaScript 以瀏覽與編輯商品卡。</noscript>
-  </main>
+  <div id="app"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
