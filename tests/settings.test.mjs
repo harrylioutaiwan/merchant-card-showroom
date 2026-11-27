@@ -28,7 +28,7 @@ test('storage tolerates malformed settings containers', () => {
   }
 });
 
-test('storage round-trips by product ID and reset restores defaults', (context) => {
+test('storage isolates product IDs and layouts, and reset stays within one layout', (context) => {
   const data = new Map();
   const previous = globalThis.window;
   globalThis.window = {
@@ -42,13 +42,20 @@ test('storage round-trips by product ID and reset restores defaults', (context) 
     else globalThis.window = previous;
   });
 
+  const searchId = 'search-toothpaste';
   const edited = { ...defaultSettings, showPromotion: false };
-  assert.equal(writeSettings(catalog[0].id, edited), true);
-  assert.deepEqual(readSettings(catalog[0].id), edited);
+  assert.equal(writeSettings(searchId, edited), true);
+  assert.deepEqual(readSettings(searchId), edited);
   assert.deepEqual(JSON.parse([...data.values()][0]), { version: 2, settings: edited });
   assert.deepEqual(readSettings(catalog[1].id), defaultSettings);
-  assert.equal(writeSettings(catalog[0].id, defaultSettings), true);
-  assert.deepEqual(readSettings(catalog[0].id), defaultSettings);
+  assert.deepEqual(readSettings(searchId, 'list'), defaultSettings);
+  const listSettings = { ...defaultSettings, showCarousel: false, showVideo: false };
+  assert.equal(writeSettings(searchId, listSettings, 'list'), true);
+  assert.deepEqual(readSettings(searchId, 'list'), listSettings);
+  assert.deepEqual(readSettings(searchId), edited);
+  assert.equal(writeSettings(searchId, defaultSettings), true);
+  assert.deepEqual(readSettings(searchId), defaultSettings);
+  assert.deepEqual(readSettings(searchId, 'list'), listSettings);
 });
 
 test('storage denial recovers from reads and reports failed writes', (context) => {
@@ -79,8 +86,10 @@ test('all presets resolve and search variants share the same product', () => {
 
 test('variant presentation maps distinct commerce metadata', () => {
   assert.equal(getVariantPresentation(catalog[0]).rank, '第 1 名');
-  assert.equal(getVariantPresentation(catalog[2]).priceLabel, '限搶價');
-  assert.ok(getVariantPresentation(catalog[2]).supporting.some((item) => item.text === '最後 389 組'));
-  assert.ok(getVariantPresentation(catalog[4]).supporting.some((item) => item.className === 'shipping'));
+  const flash = catalog.find((product) => product.kind === 'flash-sale');
+  const search = catalog.find((product) => product.kind === 'search');
+  assert.equal(getVariantPresentation(flash).priceLabel, '限搶價');
+  assert.ok(getVariantPresentation(flash).supporting.some((item) => item.text === '最後 389 組'));
+  assert.ok(getVariantPresentation(search).supporting.some((item) => item.className === 'shipping'));
   assert.equal(formatPrice(1078), '$1,078');
 });

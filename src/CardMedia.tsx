@@ -1,20 +1,32 @@
-import * as Dialog from '@radix-ui/react-dialog';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import useEmblaCarousel from 'embla-carousel-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import type { Product, YouTubeVideo } from './model.js';
 import styles from './merchant-card.module.css';
 
 function CardVideo({ video }: { video: YouTubeVideo }) {
+  const titleId = useId();
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+
   return (
-    <Dialog.Root>
-      <Dialog.Trigger className={styles.playButton} aria-label="播放商品影片" />
-      <Dialog.Portal>
-        <Dialog.Overlay className={styles.videoOverlay} />
-        <Dialog.Content className={styles.videoDialog} aria-describedby={undefined}>
-          <div className={styles.videoHeader}>
-            <Dialog.Title>{video.title}</Dialog.Title>
-            <Dialog.Close>關閉影片</Dialog.Close>
-          </div>
+    <>
+      <IconButton className={styles.playButton} aria-label="播放商品影片" aria-haspopup="dialog"
+        onClick={() => setOpen(true)} />
+      <Dialog open={open} onClose={close} aria-labelledby={titleId}
+        transitionDuration={reduceMotion ? 0 : undefined}
+        slotProps={{ paper: { className: styles.videoDialog }, backdrop: { className: styles.videoOverlay } }}>
+        <div className={styles.videoHeader}>
+          <DialogTitle id={titleId}>{video.title}</DialogTitle>
+          <Button type="button" onClick={close} variant="contained" size="small">關閉影片</Button>
+        </div>
+        {open && (
           <iframe
             className={styles.videoFrame}
             title={video.title}
@@ -23,11 +35,11 @@ function CardVideo({ video }: { video: YouTubeVideo }) {
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
-          <a className={styles.videoLink} href={`https://www.youtube.com/watch?v=${video.id}`}
-            target="_blank" rel="noreferrer">在 YouTube 上觀看</a>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        )}
+        <Link className={styles.videoLink} href={`https://www.youtube.com/watch?v=${video.id}`}
+          target="_blank" rel="noreferrer">在 YouTube 上觀看</Link>
+      </Dialog>
+    </>
   );
 }
 
@@ -89,7 +101,7 @@ export function CardMedia({ product, banner, children, showCarousel, showVideo }
         <div className={styles.dots} role="group" aria-label="選擇商品照片">
           <span className={styles.imageStatus} role="status">第 {index + 1} 張，共 {images.length} 張</span>
           {images.map((src, position) => (
-            <button key={`${position}:${src}`} type="button" aria-label={`第 ${position + 1} 張照片`}
+            <IconButton key={`${position}:${src}`} size="small" aria-label={`第 ${position + 1} 張照片`}
               aria-pressed={index === position} onClick={() => carousel?.scrollTo(position)} />
           ))}
         </div>

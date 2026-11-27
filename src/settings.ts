@@ -1,7 +1,8 @@
-import { defaultSettings, displayFields, type DisplaySettings } from './model.js';
+import { defaultSettings, displayFields, type DisplaySettings, type Layout } from './model.js';
 
-export function settingsKey(id: string): string {
-  return `merchant-showroom:settings:${id}`;
+export function settingsKey(id: string, layout: Layout = 'grid'): string {
+  const base = `merchant-showroom:settings:${id}`;
+  return layout === 'list' ? `${base}:list` : base;
 }
 
 export function decodeSettings(raw: string | null): DisplaySettings {
@@ -23,17 +24,17 @@ export function decodeSettings(raw: string | null): DisplaySettings {
   return settings;
 }
 
-export function readSettings(id: string): DisplaySettings {
+export function readSettings(id: string, layout: Layout = 'grid'): DisplaySettings {
   try {
-    return decodeSettings(window.localStorage.getItem(settingsKey(id)));
+    return decodeSettings(window.localStorage.getItem(settingsKey(id, layout)));
   } catch {
     return { ...defaultSettings };
   }
 }
 
-export function writeSettings(id: string, settings: DisplaySettings): boolean {
+export function writeSettings(id: string, settings: DisplaySettings, layout: Layout = 'grid'): boolean {
   try {
-    window.localStorage.setItem(settingsKey(id), JSON.stringify({ version: 2, settings }));
+    window.localStorage.setItem(settingsKey(id, layout), JSON.stringify({ version: 2, settings }));
     return true;
   } catch {
     return false;

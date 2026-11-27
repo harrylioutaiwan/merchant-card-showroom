@@ -12,11 +12,12 @@
   border-radius: .58rem;
   font-family: system-ui, sans-serif;
   line-height: 1.4;
-  --card-accent: #cb1c60;
+  --card-accent: #d01963;
 }
 
 .card *, .card *::before, .card *::after { box-sizing: border-box; }
-.card[data-kind="flash-sale"] { --card-accent: #cb1926; }
+.card[data-kind="flash-sale"] { --card-accent: #c51924; }
+.card[data-kind="search"] { border-color: #eee9ec; border-radius: .4rem; }
 .media { position: relative; min-width: 0; background: #fff; }
 .mediaFrame { position: relative; aspect-ratio: 1; }
 .viewport { width: 100%; height: 100%; overflow: hidden; }
@@ -65,40 +66,25 @@
 }
 .playButton:hover { background: #282326; }
 
-.videoOverlay { position: fixed; inset: 0; z-index: 10; background: #17131ac4; }
+.videoOverlay { background: #17131ac4; }
 .videoDialog {
-  position: fixed;
-  z-index: 11;
-  top: 50%;
-  left: 50%;
   display: grid;
   gap: .85rem;
-  box-sizing: border-box;
-  transform: translate(-50%, -50%);
   width: min(42rem, calc(100% - 2rem));
   max-width: none;
   max-height: calc(100dvh - 2rem);
-  margin: auto;
+  box-sizing: border-box;
+  margin: 1rem;
   padding: .9rem;
   overflow: auto;
-  border: 0;
   border-radius: .65rem;
   background: #252125;
   color: #fff;
   overscroll-behavior: contain;
 }
 .videoHeader { display: flex; align-items: center; justify-content: space-between; gap: .85rem; }
-.videoHeader h2 { margin: 0; font: 700 1rem/1.4 system-ui, sans-serif; }
-.videoHeader button {
-  flex: none;
-  background: #fff;
-  color: #282326;
-  border: 0;
-  border-radius: .35rem;
-  padding: .45rem .65rem;
-  font: 650 .85rem/1.4 system-ui, sans-serif;
-  cursor: pointer;
-}
+.videoHeader h2 { margin: 0; padding: 0; font: 700 1rem/1.4 system-ui, sans-serif; }
+.videoHeader button { flex: none; }
 .videoFrame { display: block; width: 100%; min-height: 200px; aspect-ratio: 16 / 9; border: 0; background: #110f11; }
 .videoLink { justify-self: start; color: #ffdce9; font: 700 .875rem/1.4 system-ui, sans-serif; text-underline-offset: .2em; }
 .videoHeader button:focus-visible, .videoLink:focus-visible { outline: 2px solid #ffdce9; outline-offset: 2px; }
@@ -123,28 +109,62 @@
 .banner { background: #ba1827; color: #fff; padding: .22rem .55rem; text-align: center; font-size: .78rem; font-weight: 735; }
 
 .body { display: flex; min-width: 0; flex: 1; flex-direction: column; padding: .7rem .8rem .8rem; }
-.title h2 { margin: 0; line-height: 1.4; font-size: 1rem; font-weight: 625; overflow-wrap: anywhere; }
-.promotion { margin: 0 0 .25rem; color: #a9212d; font-size: .85rem; font-weight: 650; overflow-wrap: anywhere; }
+.title h2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  margin: 0;
+  line-height: 1.45;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.promotion { margin: 0 0 .22rem; color: #c52229; font-size: .9rem; font-weight: 580; overflow-wrap: anywhere; }
 .priceRow { display: flex; flex-wrap: wrap; gap: .18rem .45rem; align-items: baseline; margin-top: .32rem; }
-.price { color: var(--card-accent); font-size: 1.38rem; font-weight: 800; white-space: nowrap; }
+.price { color: var(--card-accent); font-size: clamp(1.25rem, 8cqi, 1.7rem); font-weight: 760; white-space: nowrap; }
+.currency { margin-inline-end: .08em; font-size: .66em; }
+.card[data-kind="search"][data-layout="grid"] .price,
+.card[data-layout="list"] .price { font-weight: 590; }
 .priceLabel { color: var(--card-accent); font-size: .76rem; font-weight: 740; }
-.priceRow del, .priceNote { color: #6c6167; font-size: .78rem; }
+.priceRow del, .priceNote { color: #726971; font-size: .79rem; }
 .card[data-kind="flash-sale"] .priceRow del { flex-basis: 100%; }
 
-.rating { color: #6c6167; font-size: .8rem; margin: .2rem 0 0; }
-.stars { color: #a35d04; letter-spacing: .06rem; }
-.supporting { display: flex; flex-wrap: wrap; align-content: start; gap: .22rem .3rem; margin-top: auto; padding-top: .45rem; color: #554a50; font-size: .77rem; }
+.rating { display: flex; align-items: center; gap: .36rem; margin: .2rem 0 0; color: #726971; font-size: .8rem; }
+.stars { color: #e8a100; font-size: 1.04rem; }
+.stars :global(.MuiRating-iconEmpty) { color: #a96d12; }
+.supporting { display: flex; flex-wrap: wrap; align-items: center; gap: .26rem .3rem; margin-top: auto; padding-top: .45rem; color: #4d4147; font-size: .79rem; }
 .sold { flex-basis: 100%; }
-.stock, .shipping, .tag { padding: .12rem .35rem; border-radius: .2rem; font-weight: 700; }
-.stock { color: #71313a; background: #faeeee; }
-.shipping { color: #a7212e; background: #fae9ed; }
-.tag { color: #9f2054; background: #faedf3; }
+.stock, .tag { height: auto; padding: .12rem .37rem; font: inherit; font-weight: 700; }
+.stock { color: #673238; background: #fbe9ea; border-radius: .6rem; }
+.shipping {
+  display: inline-flex;
+  align-items: center;
+  height: auto;
+  overflow: hidden;
+  border-radius: .18rem;
+  color: #8c1824;
+  background: #f9e3e4;
+  font: inherit;
+  font-weight: 750;
+}
+.supporting :global(.MuiChip-label) { padding: 0; }
+.shipping :global(.MuiChip-label) { display: flex; align-items: center; }
+.speedMark + span { padding-inline: .3rem; }
+.speedMark { padding: .06rem .24rem; background: #c21c27; color: #fff; }
+.tag { color: #fff; background: #b72154; border-radius: .18rem; }
 
 .actions { display: flex; flex-wrap: wrap; gap: .32rem; justify-content: flex-end; margin-top: .35rem; }
-.actions button { font: 700 .78rem/1.4 system-ui, sans-serif; border: 0; border-radius: .23rem; background: #ece8ea; color: #493d44; padding: .38rem .65rem; cursor: pointer; }
-.actions .cart { background: #1664ab; color: #fff; }
-.actions .purchase { background: #c51e2e; color: #fff; }
+.actions button { min-width: 0; font: 700 .78rem/1.4 system-ui, sans-serif; border: 0; border-radius: .23rem; background: #ece8ea; color: #493d44; padding: .38rem .65rem; cursor: pointer; }
+.actions .cart, .actions .cart:hover { background: #1664ab; color: #fff; }
+.actions .purchase, .actions .purchase:hover { background: #c51e2e; color: #fff; }
 .actions button:focus-visible { outline: 2px solid #a91550; outline-offset: 2px; }
+
+.card[data-kind="flash-sale"] .body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; }
+.card[data-kind="flash-sale"] .title,
+.card[data-kind="flash-sale"] .priceRow,
+.card[data-kind="flash-sale"] .rating { grid-column: 1 / -1; }
+.card[data-kind="flash-sale"] .actions { grid-column: 2; }
 
 .card[data-layout="list"] { display: grid; grid-template-columns: clamp(4rem, 24%, 10rem) minmax(0, 1fr); }
 .card[data-layout="list"] .media { align-self: center; }
