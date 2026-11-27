@@ -121,11 +121,10 @@
   gap: .4rem;
   margin: 0 0 .65rem;
   padding: .2rem 0;
-  background: transparent;
   color: var(--accent);
-  border: 0;
   font-size: .875rem;
   font-weight: 700;
+  text-decoration: none;
 }
 .editorBack:hover { text-decoration: underline; text-underline-offset: .2em; }
 .previewFrame {

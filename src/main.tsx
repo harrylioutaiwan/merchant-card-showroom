@@ -69,13 +69,13 @@ function Gallery({ settings, navigate }: { settings: SettingsMap; navigate: Navi
   );
 }
 
-function CardEditor({ product, preset, settings, status, save, onBack }: {
+function CardEditor({ product, preset, settings, status, save, navigate }: {
   product: Product;
   preset: Preset;
   settings: DisplaySettings;
   status: string;
   save: (settings: DisplaySettings, reset?: boolean) => void;
-  onBack: () => void;
+  navigate: Navigate;
 }) {
   const [width, setWidth] = useState<string>(preset.layout === 'list' ? 'auto' : '320');
   const [notice, setNotice] = useState('');
@@ -95,9 +95,9 @@ function CardEditor({ product, preset, settings, status, save, onBack }: {
   return (
     <div className={styles.editor}>
       <section className={styles.preview} aria-labelledby="preview-title">
-        <button className={styles.editorBack} type="button" onClick={onBack}>
-          <span aria-hidden="true">←</span> 返回上一頁
-        </button>
+        <RouteLink className={styles.editorBack} navigate={navigate} href="./">
+          <span aria-hidden="true">←</span> 返回所有卡片
+        </RouteLink>
         <h1 id="preview-title">{preset.title}</h1>
         <p className={styles.description}>{preset.description}</p>
         <div className={styles.previewFrame}>
@@ -187,17 +187,9 @@ function App() {
   function navigate(href: string) {
     const next = new URL(href, window.location.href);
     if (next.search === window.location.search) return;
-    window.history.pushState({ showroomNavigation: true }, '', next);
+    window.history.pushState(null, '', next);
     setSearch(next.search);
     window.scrollTo(0, 0);
-  }
-
-  function returnToPreviousView() {
-    if (window.history.state?.showroomNavigation === true) {
-      window.history.back();
-    } else {
-      navigate('./');
-    }
   }
 
   function save(id: string, display: DisplaySettings, reset: boolean | undefined) {
@@ -250,7 +242,7 @@ function App() {
           {route.type === 'overview' && <Gallery settings={settings} navigate={navigate} />}
           {route.type === 'card' && (
             <CardEditor key={`${route.product.id}:${route.preset.key}`} product={route.product} preset={route.preset}
-              settings={settings[route.product.id]} status={status[route.product.id]} onBack={returnToPreviousView}
+              settings={settings[route.product.id]} status={status[route.product.id]} navigate={navigate}
               save={(display, reset) => save(route.product.id, display, reset)} />
           )}
           {route.type === 'missing' && (
