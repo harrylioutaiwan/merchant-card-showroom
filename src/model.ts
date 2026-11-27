@@ -1,10 +1,19 @@
 export type Layout = 'grid' | 'list';
 export type CardKind = 'ranking' | 'flash-sale' | 'search';
 
+export interface YouTubeVideo {
+  id: string;
+  title: string;
+}
+
 interface ProductDetails {
   id: string;
   name: string;
   imageUrl: string;
+  media?: {
+    additionalImages?: readonly string[];
+    video?: YouTubeVideo;
+  };
   price: { amount: number; original?: number };
   promotion?: string;
   campaign?: string;
@@ -18,6 +27,8 @@ export type Product = ProductDetails & (
 );
 
 export const displayFields = [
+  { key: 'showCarousel', label: '顯示照片輪播' },
+  { key: 'showVideo', label: '顯示影片入口' },
   { key: 'showOriginalPrice', label: '顯示原價' },
   { key: 'showPromotion', label: '顯示促銷文案' },
   { key: 'showRating', label: '顯示評價' },
@@ -32,6 +43,8 @@ export type DisplayKey = (typeof displayFields)[number]['key'];
 export type DisplaySettings = Record<DisplayKey, boolean>;
 
 export const defaultSettings: Readonly<DisplaySettings> = Object.freeze({
+  showCarousel: true,
+  showVideo: true,
   showOriginalPrice: true,
   showPromotion: true,
   showRating: true,

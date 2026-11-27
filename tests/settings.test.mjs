@@ -13,8 +13,8 @@ test('invalid, absent and unknown-version data use defaults', () => {
 });
 
 test('v2 accepts boolean display values and fills defaults', () => {
-  const raw = '{"version":2,"settings":{"showOriginalPrice":false,"showPromotion":0,"unrecognized":true}}';
-  assert.deepEqual(decodeSettings(raw), { ...defaultSettings, showOriginalPrice: false });
+  const raw = '{"version":2,"settings":{"showOriginalPrice":false,"showCarousel":false,"showVideo":false,"showPromotion":0,"unrecognized":true}}';
+  assert.deepEqual(decodeSettings(raw), { ...defaultSettings, showOriginalPrice: false, showCarousel: false, showVideo: false });
 });
 
 test('v1 migrates preferences and discards product overrides', () => {

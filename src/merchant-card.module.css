@@ -17,8 +17,86 @@
 
 .card *, .card *::before, .card *::after { box-sizing: border-box; }
 .card[data-kind="flash-sale"] { --card-accent: #cb1926; }
-.media { position: relative; background: #fff; }
-.media img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
+.media { position: relative; min-width: 0; background: #fff; }
+.mediaFrame { position: relative; aspect-ratio: 1; }
+.viewport { width: 100%; height: 100%; overflow: hidden; }
+.mediaFrame[data-carousel] { touch-action: pan-y; user-select: none; }
+.mediaFrame[data-carousel] .viewport { cursor: grab; }
+.mediaFrame[data-carousel] .viewport:active { cursor: grabbing; }
+.viewport:focus-visible { outline: 2px solid #a91550; outline-offset: -3px; }
+.track { display: flex; height: 100%; transition: transform .2s ease-out; }
+.track[data-dragging="true"] { transition: none; }
+.track img { display: block; flex: 0 0 100%; min-width: 0; width: 100%; height: 100%; object-fit: contain; }
+.dots { display: flex; flex-wrap: wrap; justify-content: center; padding: .1rem; }
+.dots button {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.dots button::before { content: ""; width: .42rem; height: .42rem; border-radius: 50%; background: #857e82; }
+.dots button[aria-pressed="true"]::before { background: #c51e59; }
+.dots button:focus-visible, .playButton:focus-visible { outline: 2px solid #a91550; outline-offset: 2px; }
+.imageStatus { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
+
+.playButton {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  display: grid;
+  place-items: center;
+  width: clamp(2rem, 22%, 3.25rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: #282326ad;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.playButton::before {
+  content: "";
+  width: .78rem;
+  height: .9rem;
+  margin-left: .12rem;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.playButton:hover { background: #282326; }
+
+.videoDialog {
+  width: min(42rem, calc(100% - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: .65rem;
+  background: #252125;
+  color: #fff;
+  overscroll-behavior: contain;
+}
+.videoDialog::backdrop { background: #17131ac4; }
+.videoPanel { display: grid; gap: .85rem; padding: .9rem; }
+.videoHeader { display: flex; align-items: center; justify-content: space-between; gap: .85rem; }
+.videoHeader h2 { margin: 0; font: 700 1rem/1.4 system-ui, sans-serif; }
+.videoHeader button {
+  flex: none;
+  background: #fff;
+  color: #282326;
+  border: 0;
+  border-radius: .35rem;
+  padding: .45rem .65rem;
+  font: 650 .85rem/1.4 system-ui, sans-serif;
+  cursor: pointer;
+}
+.videoFrame { display: block; width: 100%; min-height: 200px; aspect-ratio: 16 / 9; border: 0; background: #110f11; }
+.videoLink { justify-self: start; color: #ffdce9; font: 700 .875rem/1.4 system-ui, sans-serif; text-underline-offset: .2em; }
+.videoHeader button:focus-visible, .videoLink:focus-visible { outline: 2px solid #ffdce9; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .track { transition: none; } }
 
 .rank {
   position: absolute;
@@ -64,8 +142,7 @@
 .actions button:focus-visible { outline: 2px solid #a91550; outline-offset: 2px; }
 
 .card[data-layout="list"] { display: grid; grid-template-columns: clamp(4rem, 24%, 10rem) minmax(0, 1fr); }
-.card[data-layout="list"] .media { min-height: 6rem; }
-.card[data-layout="list"] .media img { position: absolute; inset: 0; height: 100%; }
+.card[data-layout="list"] .media { align-self: center; }
 .card[data-layout="list"] .body { align-self: center; }
 
 @container (min-width: 33rem) {

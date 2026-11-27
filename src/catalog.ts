@@ -51,6 +51,10 @@ export const catalog: Product[] = [
     kind: 'search',
     name: '專業抗敏護齦牙膏 100g × 8 入',
     imageUrl: './assets/toothpaste.jpg',
+    media: {
+      additionalImages: ['./assets/toothpaste-detail.jpg'],
+      video: { id: 'fyNzdn9yHVE', title: '抗敏牙膏影片示例' },
+    },
     price: { amount: 1078 },
     priceNote: '售價已折',
     sponsored: true,

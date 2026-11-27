@@ -66,6 +66,8 @@
       <dl>
         <dt><code>product</code></dt>
         <dd>共同欄位是 <code>id</code>、<code>name</code>、<code>imageUrl</code>、<code>price</code>。<code>kind</code> 決定排行、限搶或搜尋的業務欄位。</dd>
+        <dt><code>product.media</code></dt>
+        <dd>選填的 <code>additionalImages</code> 與 YouTube <code>video</code>。目前照片與播放器狀態由各卡片獨立管理。</dd>
         <dt><code>layout</code></dt>
         <dd>預設方格（<code>grid</code>）。搜尋卡支援橫列（<code>list</code>）。</dd>
         <dt><code>display</code></dt>
@@ -82,6 +84,10 @@
         kind: 'search',
         name: '專業抗敏護齦牙膏 100g × 8 入',
         imageUrl: './assets/toothpaste.jpg',
+        media: {
+          additionalImages: ['./assets/toothpaste-detail.jpg'],
+          video: { id: 'fyNzdn9yHVE', title: '抗敏牙膏影片示例' },
+        },
         price: { amount: 1078 },
         promotion: '滿 1 件折 111',
         rating: { score: 4.5, count: 2954 },

@@ -1,3 +1,4 @@
+import { CardMedia } from './CardMedia.js';
 import { getVariantPresentation } from './card-variants.js';
 import { defaultSettings, formatPrice, type DisplayKey, type DisplaySettings, type Layout, type Product } from './model.js';
 import styles from './merchant-card.module.css';
@@ -29,16 +30,15 @@ export function ProductCard({ product, layout = 'grid', display, onAction }: Pro
 
   return (
     <article className={styles.card} data-kind={product.kind} data-layout={isList ? 'list' : 'grid'}>
-      <div className={styles.media}>
-        <img src={product.imageUrl} alt="" width="580" height="580" />
+      <CardMedia key={product.id} product={product} showCarousel={settings.showCarousel} showVideo={settings.showVideo}
+        banner={settings.showPromotion ? product.campaign : undefined}>
         {settings.showRank && variant.rank && (
           <span className={styles.rank} aria-label={variant.rank}>
             <span aria-hidden="true">TOP</span><strong aria-hidden="true">{product.kind === 'ranking' && product.rank}</strong>
           </span>
         )}
         {product.kind === 'search' && product.sponsored && <span className={styles.ad}>廣告</span>}
-        {settings.showPromotion && product.campaign && <div className={styles.banner}>{product.campaign}</div>}
-      </div>
+      </CardMedia>
       <div className={styles.body}>
         <div className={styles.title}>
           {settings.showPromotion && product.promotion && <p className={styles.promotion}>{product.promotion}</p>}

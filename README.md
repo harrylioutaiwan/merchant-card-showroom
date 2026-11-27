@@ -27,12 +27,13 @@ npm start
 1. 在總覽看四種呈現，或用左側導覽開啟一張代表卡。
 2. 切換評價、銷量、配送、促銷等區塊。顯示偏好即時生效，並按商品 ID 自動儲存。搜尋方格與橫列沿用同一筆編輯。
 3. 重整或返回總覽檢查一致性。編輯器的「重設設定」會恢復該商品的預設值。
-4. 開啟 `sample.html` 驗證獨立嵌入。它載入相同 React 卡片的 JS 與 CSS，並由 HTML 宿主傳入設定。
+4. 搜尋卡可用滑鼠拖曳、觸控或鍵盤方向鍵切換照片。點擊播放鍵可開啟 YouTube 示例影片，也能選擇在 YouTube 上觀看。輪播與影片入口可在展示設定獨立切換。
+5. 開啟 `sample.html` 驗證獨立嵌入。它載入相同 React 卡片的 JS 與 CSS，並由 HTML 宿主傳入設定。
 
 | 檔案 | 責任 |
 | --- | --- |
 | `src/model.ts`、`src/catalog.ts`、`src/registry.ts` | 商品型別、示例和可導覽的卡片預設 |
-| `src/ProductCard.tsx`、`src/card-variants.ts` | 共用商品卡與情境專屬資訊 |
+| `src/ProductCard.tsx`、`src/CardMedia.tsx`、`src/card-variants.ts` | 共用商品卡與情境專屬資訊 |
 | `src/main.tsx`、`src/settings.ts` | Showroom 路由、編輯狀態、儲存驗證 |
 | `src/embed.tsx`、`public/sample.html` | 獨立 HTML 入口與公開嵌入 API |
 

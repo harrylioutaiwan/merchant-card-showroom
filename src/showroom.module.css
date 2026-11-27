@@ -60,6 +60,38 @@
 .sidebar a { padding: .6rem .65rem; border-radius: .42rem; color: var(--ink); font-size: .93rem; font-weight: 560; text-decoration: none; }
 .sidebar a:hover, .sidebar a[aria-current] { background: var(--pink); color: var(--accent); }
 .sidebar a[aria-current] { font-weight: 760; }
+.showroomRow { display: flex; align-items: stretch; gap: .25rem; }
+.showroomRow a { flex: 1; }
+.showroomToggle {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  flex: none;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: .42rem;
+}
+.showroomToggle:hover { background: var(--pink); color: var(--accent); }
+.showroomToggle span {
+  width: .5rem;
+  height: .5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+}
+.showroomToggle[aria-expanded="true"] span { transform: translateY(-.1rem) rotate(45deg); }
+.showroomLinks {
+  display: grid;
+  gap: .18rem;
+  margin: .3rem 0 .15rem .7rem;
+  padding: 0 0 0 .5rem;
+  border-left: 1px solid #e4d5dd;
+  list-style: none;
+}
+.showroomLinks[hidden] { display: none; }
+.showroomLinks a { display: block; }
+
 
 .main { min-width: 0; background: var(--surface); }
 .overview { max-width: 75rem; margin-inline: auto; padding: clamp(1rem, 2.7vw, 2.25rem); }
@@ -153,5 +185,7 @@
   .sidebar nav { display: flex; flex-wrap: wrap; gap: .2rem; }
   .sidebar h2 { display: none; }
   .sidebar a { padding: .42rem .48rem; font-size: .82rem; }
+  .showroomSection { flex: 0 0 100%; min-width: 0; }
+  .showroomLinks { display: flex; flex-wrap: wrap; }
   .previewFrame { min-height: 14rem; }
 }

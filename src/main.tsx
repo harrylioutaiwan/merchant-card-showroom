@@ -78,6 +78,8 @@ function CardEditor({ product, preset, settings, status, save }: {
   const [width, setWidth] = useState<string>(preset.layout === 'list' ? 'auto' : '320');
   const [notice, setNotice] = useState('');
   const applicableFields = {
+    showCarousel: Boolean(product.media?.additionalImages?.length),
+    showVideo: Boolean(product.media?.video),
     showOriginalPrice: product.price.original !== undefined,
     showPromotion: true,
     showRating: Boolean(product.rating),
@@ -142,6 +144,7 @@ function CardEditor({ product, preset, settings, status, save }: {
 
 function App() {
   const headerRef = useRef<HTMLElement>(null);
+  const [typesOpen, setTypesOpen] = useState(true);
   const [search, setSearch] = useState(window.location.search);
   const [settings, setSettings] = useState<SettingsMap>(() =>
     Object.fromEntries(catalog.map(({ id }) => [id, readSettings(id)])),
@@ -206,11 +209,25 @@ function App() {
         <aside className={styles.sidebar}>
           <nav aria-label="Showroom">
             <h2>Showroom</h2>
-            <RouteLink navigate={navigate} href="./" aria-current={activeView === 'all' ? 'page' : undefined}>所有卡片</RouteLink>
-            {presets.map((preset) => (
-              <RouteLink key={preset.key} navigate={navigate} href={cardHref(preset.productId, preset.layout)}
-                aria-current={activeView === preset.key ? 'page' : undefined}>{preset.title}</RouteLink>
-            ))}
+            <div className={styles.showroomSection}>
+              <div className={styles.showroomRow}>
+                <RouteLink navigate={navigate} href="./" aria-current={activeView === 'all' ? 'page' : undefined}>所有卡片</RouteLink>
+                <button type="button" className={styles.showroomToggle}
+                  aria-expanded={typesOpen} aria-controls="card-type-links"
+                  aria-label={typesOpen ? '收合商品卡類型' : '展開商品卡類型'}
+                  onClick={() => setTypesOpen((open) => !open)}>
+                  <span aria-hidden="true" />
+                </button>
+              </div>
+              <ul id="card-type-links" className={styles.showroomLinks} aria-label="商品卡類型" hidden={!typesOpen}>
+                {presets.map((preset) => (
+                  <li key={preset.key}>
+                    <RouteLink navigate={navigate} href={cardHref(preset.productId, preset.layout)}
+                      aria-current={activeView === preset.key ? 'page' : undefined}>{preset.title}</RouteLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <h2>文件</h2>
             <a href="./sample.html#card-schema">卡片資料結構</a>
             <a href="./sample.html">HTML 嵌入範例</a>
