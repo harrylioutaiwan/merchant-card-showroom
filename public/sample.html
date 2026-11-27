@@ -7,11 +7,28 @@
   <link rel="stylesheet" href="./embed/merchant-card.css">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 2rem 1rem 3rem; background: #f8f5f7; color: #282326; font: 1rem/1.6 system-ui, sans-serif; }
-    main { max-width: 66rem; margin: auto; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--guide-header-height, 10rem) + .75rem); }
+    body { margin: 0; padding: 0 1rem 3rem; background: #f8f5f7; color: #282326; font: 1rem/1.6 system-ui, sans-serif; }
+    .guide-header, main { max-width: 66rem; margin-inline: auto; }
+    .guide-header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding-block: .85rem .8rem;
+      border-bottom: 1px solid #e9e0e5;
+      background: #f8f5f7;
+    }
+    .guide-header nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .45rem 1rem; }
     a { color: #b71956; text-underline-offset: .22em; }
-    h1 { margin-bottom: .2rem; }
-    header p { margin-top: 0; color: #645960; }
+    :focus-visible { outline: 2px solid #b71956; outline-offset: 3px; }
+    .back-link { display: inline-flex; align-items: center; gap: .55rem; font-weight: 700; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .back-icon { position: relative; display: inline-block; width: .95rem; height: .8rem; flex: 0 0 .95rem; }
+    .back-icon::before { content: ""; position: absolute; top: 50%; left: .15rem; width: .78rem; border-top: 2px solid currentColor; transform: translateY(-50%); }
+    .back-icon::after { content: ""; position: absolute; top: 50%; left: .13rem; width: .48rem; height: .48rem; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-50%) rotate(45deg); }
+    h1 { margin: .65rem 0 .15rem; font-size: clamp(1.35rem, 4vw, 1.85rem); }
+    .guide-header p { margin: 0; color: #645960; font-size: .92rem; }
+    main { padding-top: 1rem; }
     .example { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); align-items: start; gap: 1rem; }
     section { padding: 1rem; background: white; border: 1px solid #e9e0e5; border-radius: .6rem; }
     section h2 { margin: 0 0 .75rem; font-size: 1.12rem; }
@@ -21,15 +38,19 @@
     dt { font-weight: 700; }
     dd { margin: .15rem 0 .6rem; }
     @media (max-width: 42rem) { .example { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
 </head>
 <body>
+  <header class="guide-header">
+    <nav aria-label="嵌入指南導覽">
+      <a class="back-link" href="./"><span class="back-icon" aria-hidden="true"></span>返回 Merchant Card Showroom</a>
+      <a href="#card-schema">卡片資料結構</a>
+    </nav>
+    <h1>HTML 嵌入範例</h1>
+    <p>在一般 HTML 中載入商品卡模組和樣式，再傳入商品與顯示設定。</p>
+  </header>
   <main>
-    <header>
-      <a href="./">返回 Merchant Card Showroom</a>
-      <h1>HTML 嵌入範例</h1>
-      <p>在一般 HTML 中載入商品卡模組和樣式，再傳入商品與顯示設定。</p>
-    </header>
     <div class="example">
       <section aria-labelledby="example-title">
         <h2 id="example-title">執行結果</h2>
@@ -40,7 +61,7 @@
         <pre><code id="snippet"></code></pre>
       </section>
     </div>
-    <section id="card-schema" aria-labelledby="schema-title">
+    <section id="card-schema" aria-labelledby="schema-title" tabindex="-1">
       <h2 id="schema-title">卡片資料結構</h2>
       <dl>
         <dt><code>product</code></dt>
@@ -73,6 +94,13 @@
     });
   </script>
   <script>
+    const header = document.querySelector('.guide-header');
+    const measureHeader = () => document.documentElement.style.setProperty(
+      '--guide-header-height', `${header.getBoundingClientRect().height}px`,
+    );
+    measureHeader();
+    new ResizeObserver(measureHeader).observe(header);
+
     const js = document.querySelector('#sample-script').textContent.replace(/^    /gm, '').trim();
     document.querySelector('#snippet').textContent =
       '<link rel="stylesheet" href="./embed/merchant-card.css">\n' +
