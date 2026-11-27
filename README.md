@@ -2,6 +2,8 @@
 
 以 2026-11-27 的 momo 官網截圖為依據，整理搜尋方格、搜尋橫列、精選排行與限時搶購四種卡片呈現。Showroom 使用玫紅主色與粉色選取背景。卡片保留各情境的價格、促銷、名次、庫存與配送層級。
 
+[Vercel 展示](https://merchant-card-showroom.vercel.app/) · [獨立 HTML 嵌入](https://merchant-card-showroom.vercel.app/sample.html)
+
 ## 執行
 
 需要 Node.js 18.18 以上與 npm。
