@@ -42,26 +42,6 @@ export const defaultSettings: Readonly<DisplaySettings> = Object.freeze({
   showTags: true,
 });
 
-export interface ProductOverrides {
-  name?: string;
-  price?: number;
-  promotion?: string;
-}
-
-export interface CardConfiguration {
-  overrides: ProductOverrides;
-  settings: DisplaySettings;
-}
-
-export function applyOverrides(product: Product, overrides: ProductOverrides): Product {
-  return {
-    ...product,
-    name: overrides.name ?? product.name,
-    price: { ...product.price, amount: overrides.price ?? product.price.amount },
-    promotion: overrides.promotion ?? product.promotion,
-  };
-}
-
 const twd = new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 0 });
 
 export function formatPrice(amount: number): string {

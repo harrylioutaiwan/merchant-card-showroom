@@ -73,6 +73,7 @@
 .previewFrame {
   min-height: 20rem;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   margin-top: 1.1rem;
   padding: clamp(.7rem, 2.5vw, 1.7rem);
@@ -99,21 +100,6 @@
 .settings h2 { font-size: 1.35rem; }
 .settings fieldset { min-width: 0; padding: 0; border: 0; margin: 1rem 0 0; }
 .settings legend { padding: 0; color: var(--muted); font-size: .87rem; font-weight: 800; margin-bottom: .55rem; }
-.productFields label { display: block; margin-bottom: .28rem; font-size: .9rem; font-weight: 550; }
-.productFields input {
-  display: block;
-  width: 100%;
-  padding: .55rem .66rem;
-  margin-bottom: .65rem;
-  border: 1px solid #dfd3da;
-  border-radius: .4rem;
-  background: #fff;
-  color: var(--ink);
-  font: inherit;
-  font-size: .9rem;
-}
-.productFields input[aria-invalid="true"] { border-color: #bd223a; }
-.error { margin: .25rem 0 .6rem; color: #a72133; font-size: .82rem; }
 .settingRow { min-height: 2.2rem; display: flex; align-items: center; justify-content: space-between; gap: .7rem; font-size: .91rem; cursor: pointer; }
 .settingRow input {
   position: relative;

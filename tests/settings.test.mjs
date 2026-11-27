@@ -2,43 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { catalog } from '../.test-build/catalog.js';
 import { getVariantPresentation } from '../.test-build/card-variants.js';
-import { applyOverrides, defaultSettings, formatPrice } from '../.test-build/model.js';
+import { defaultSettings, formatPrice } from '../.test-build/model.js';
 import { cardHref, parseRoute, presets } from '../.test-build/registry.js';
-import { createDefaults, decodeConfig, readConfig, writeConfig } from '../.test-build/settings.js';
+import { decodeSettings, readSettings, writeSettings } from '../.test-build/settings.js';
 
 test('invalid, absent and unknown-version data use defaults', () => {
-  for (const raw of [null, '{', 'null', '{"version":2,"settings":{"showRating":false}}']) {
-    assert.deepEqual(decodeConfig(raw), createDefaults());
+  for (const raw of [null, '{', 'null', '{"version":3,"settings":{"showRating":false}}']) {
+    assert.deepEqual(decodeSettings(raw), defaultSettings);
   }
 });
 
-test('only valid settings and overrides are applied, including falsy values', () => {
-  const config = decodeConfig(JSON.stringify({
-    version: 1,
-    settings: { showOriginalPrice: false, showPromotion: 0 },
-    overrides: { name: '  ', price: 0, promotion: '' },
-  }));
-  assert.deepEqual(config, {
-    settings: { ...defaultSettings, showOriginalPrice: false },
-    overrides: { price: 0, promotion: '' },
-  });
-  const effective = applyOverrides(catalog[0], config.overrides);
-  assert.equal(effective.price.amount, 0);
-  assert.equal(effective.price.original, catalog[0].price.original);
-  assert.equal(effective.promotion, '');
-  assert.equal(catalog[0].price.amount, 38);
+test('v2 accepts boolean display values and fills defaults', () => {
+  const raw = '{"version":2,"settings":{"showOriginalPrice":false,"showPromotion":0,"unrecognized":true}}';
+  assert.deepEqual(decodeSettings(raw), { ...defaultSettings, showOriginalPrice: false });
 });
 
-test('legacy settings without overrides remain usable', () => {
-  assert.deepEqual(decodeConfig('{"version":1,"settings":{"showRating":false}}'), {
-    settings: { ...defaultSettings, showRating: false },
-    overrides: {},
-  });
+test('v1 migrates preferences and discards product overrides', () => {
+  const raw = '{"version":1,"settings":{"showRating":false},"overrides":{"name":"ignored","price":0}}';
+  assert.deepEqual(decodeSettings(raw), { ...defaultSettings, showRating: false });
 });
 
-test('malformed overrides are ignored', () => {
-  const config = decodeConfig('{"version":1,"settings":{},"overrides":{"name":5,"price":-1,"promotion":[]}}');
-  assert.deepEqual(config, createDefaults());
+test('storage tolerates malformed settings containers', () => {
+  for (const settings of [null, [], 'bad', 1]) {
+    assert.deepEqual(decodeSettings(JSON.stringify({ version: 2, settings })), defaultSettings);
+  }
 });
 
 test('storage round-trips by product ID and reset restores defaults', (context) => {
@@ -55,12 +42,13 @@ test('storage round-trips by product ID and reset restores defaults', (context) 
     else globalThis.window = previous;
   });
 
-  const edited = { settings: { ...defaultSettings, showPromotion: false }, overrides: { price: 999 } };
-  assert.equal(writeConfig(catalog[0].id, edited), true);
-  assert.deepEqual(readConfig(catalog[0].id), edited);
-  assert.deepEqual(readConfig(catalog[1].id), createDefaults());
-  assert.equal(writeConfig(catalog[0].id, createDefaults()), true);
-  assert.deepEqual(readConfig(catalog[0].id), createDefaults());
+  const edited = { ...defaultSettings, showPromotion: false };
+  assert.equal(writeSettings(catalog[0].id, edited), true);
+  assert.deepEqual(readSettings(catalog[0].id), edited);
+  assert.deepEqual(JSON.parse([...data.values()][0]), { version: 2, settings: edited });
+  assert.deepEqual(readSettings(catalog[1].id), defaultSettings);
+  assert.equal(writeSettings(catalog[0].id, defaultSettings), true);
+  assert.deepEqual(readSettings(catalog[0].id), defaultSettings);
 });
 
 test('storage denial recovers from reads and reports failed writes', (context) => {
@@ -72,8 +60,8 @@ test('storage denial recovers from reads and reports failed writes', (context) =
     if (previous === undefined) delete globalThis.window;
     else globalThis.window = previous;
   });
-  assert.deepEqual(readConfig('example'), createDefaults());
-  assert.equal(writeConfig('example', createDefaults()), false);
+  assert.deepEqual(readSettings('example'), defaultSettings);
+  assert.equal(writeSettings('example', defaultSettings), false);
 });
 
 test('all presets resolve and search variants share the same product', () => {

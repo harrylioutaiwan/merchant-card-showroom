@@ -1,62 +1,39 @@
-import {
-  defaultSettings,
-  displayFields,
-  type CardConfiguration,
-  type ProductOverrides,
-} from './model.js';
-
-export const maxPrice = 99_999_999;
+import { defaultSettings, displayFields, type DisplaySettings } from './model.js';
 
 export function settingsKey(id: string): string {
   return `merchant-showroom:settings:${id}`;
 }
 
-export function createDefaults(): CardConfiguration {
-  return { settings: { ...defaultSettings }, overrides: {} };
-}
-
-function parseOverrides(value: ProductOverrides | undefined): ProductOverrides {
-  const overrides: ProductOverrides = {};
-  if (typeof value?.name === 'string' && value.name.trim() && value.name.length <= 100) {
-    overrides.name = value.name.trim();
-  }
-  if (typeof value?.price === 'number' && Number.isInteger(value.price) && value.price >= 0 && value.price <= maxPrice) {
-    overrides.price = value.price;
-  }
-  if (typeof value?.promotion === 'string' && value.promotion.length <= 80) {
-    overrides.promotion = value.promotion;
-  }
-  return overrides;
-}
-
-export function decodeConfig(raw: string | null): CardConfiguration {
-  const config = createDefaults();
-  if (!raw) return config;
+export function decodeSettings(raw: string | null): DisplaySettings {
+  const settings = { ...defaultSettings };
+  if (!raw) return settings;
 
   try {
     const data = JSON.parse(raw);
-    if (data?.version !== 1 || typeof data.settings !== 'object' || !data.settings) return config;
-    for (const { key } of displayFields) {
-      if (typeof data.settings[key] === 'boolean') config.settings[key] = data.settings[key];
+    if ((data?.version !== 1 && data?.version !== 2) ||
+      !data.settings || typeof data.settings !== 'object' || Array.isArray(data.settings)) {
+      return settings;
     }
-    config.overrides = parseOverrides(data.overrides);
+    for (const { key } of displayFields) {
+      if (typeof data.settings[key] === 'boolean') settings[key] = data.settings[key];
+    }
   } catch {
     // Leave defaults available when stored JSON is invalid.
   }
-  return config;
+  return settings;
 }
 
-export function readConfig(id: string): CardConfiguration {
+export function readSettings(id: string): DisplaySettings {
   try {
-    return decodeConfig(window.localStorage.getItem(settingsKey(id)));
+    return decodeSettings(window.localStorage.getItem(settingsKey(id)));
   } catch {
-    return createDefaults();
+    return { ...defaultSettings };
   }
 }
 
-export function writeConfig(id: string, config: CardConfiguration): boolean {
+export function writeSettings(id: string, settings: DisplaySettings): boolean {
   try {
-    window.localStorage.setItem(settingsKey(id), JSON.stringify({ version: 1, ...config }));
+    window.localStorage.setItem(settingsKey(id), JSON.stringify({ version: 2, settings }));
     return true;
   } catch {
     return false;
