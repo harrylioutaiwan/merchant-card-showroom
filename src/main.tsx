@@ -1,3 +1,4 @@
+import * as Collapsible from '@radix-ui/react-collapsible';
 import { useEffect, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { catalog } from './catalog.js';
@@ -68,12 +69,13 @@ function Gallery({ settings, navigate }: { settings: SettingsMap; navigate: Navi
   );
 }
 
-function CardEditor({ product, preset, settings, status, save }: {
+function CardEditor({ product, preset, settings, status, save, onBack }: {
   product: Product;
   preset: Preset;
   settings: DisplaySettings;
   status: string;
   save: (settings: DisplaySettings, reset?: boolean) => void;
+  onBack: () => void;
 }) {
   const [width, setWidth] = useState<string>(preset.layout === 'list' ? 'auto' : '320');
   const [notice, setNotice] = useState('');
@@ -93,6 +95,9 @@ function CardEditor({ product, preset, settings, status, save }: {
   return (
     <div className={styles.editor}>
       <section className={styles.preview} aria-labelledby="preview-title">
+        <button className={styles.editorBack} type="button" onClick={onBack}>
+          <span aria-hidden="true">←</span> 返回上一頁
+        </button>
         <h1 id="preview-title">{preset.title}</h1>
         <p className={styles.description}>{preset.description}</p>
         <div className={styles.previewFrame}>
@@ -182,9 +187,17 @@ function App() {
   function navigate(href: string) {
     const next = new URL(href, window.location.href);
     if (next.search === window.location.search) return;
-    window.history.pushState(null, '', next);
+    window.history.pushState({ showroomNavigation: true }, '', next);
     setSearch(next.search);
     window.scrollTo(0, 0);
+  }
+
+  function returnToPreviousView() {
+    if (window.history.state?.showroomNavigation === true) {
+      window.history.back();
+    } else {
+      navigate('./');
+    }
   }
 
   function save(id: string, display: DisplaySettings, reset: boolean | undefined) {
@@ -209,25 +222,25 @@ function App() {
         <aside className={styles.sidebar}>
           <nav aria-label="Showroom">
             <h2>Showroom</h2>
-            <div className={styles.showroomSection}>
+            <Collapsible.Root className={styles.showroomSection} open={typesOpen} onOpenChange={setTypesOpen}>
               <div className={styles.showroomRow}>
                 <RouteLink navigate={navigate} href="./" aria-current={activeView === 'all' ? 'page' : undefined}>所有卡片</RouteLink>
-                <button type="button" className={styles.showroomToggle}
-                  aria-expanded={typesOpen} aria-controls="card-type-links"
-                  aria-label={typesOpen ? '收合商品卡類型' : '展開商品卡類型'}
-                  onClick={() => setTypesOpen((open) => !open)}>
+                <Collapsible.Trigger className={styles.showroomToggle}
+                  aria-label={typesOpen ? '收合商品卡類型' : '展開商品卡類型'}>
                   <span aria-hidden="true" />
-                </button>
+                </Collapsible.Trigger>
               </div>
-              <ul id="card-type-links" className={styles.showroomLinks} aria-label="商品卡類型" hidden={!typesOpen}>
-                {presets.map((preset) => (
-                  <li key={preset.key}>
-                    <RouteLink navigate={navigate} href={cardHref(preset.productId, preset.layout)}
-                      aria-current={activeView === preset.key ? 'page' : undefined}>{preset.title}</RouteLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <Collapsible.Content asChild>
+                <ul className={styles.showroomLinks} aria-label="商品卡類型">
+                  {presets.map((preset) => (
+                    <li key={preset.key}>
+                      <RouteLink navigate={navigate} href={cardHref(preset.productId, preset.layout)}
+                        aria-current={activeView === preset.key ? 'page' : undefined}>{preset.title}</RouteLink>
+                    </li>
+                  ))}
+                </ul>
+              </Collapsible.Content>
+            </Collapsible.Root>
             <h2>文件</h2>
             <a href="./sample.html#card-schema">卡片資料結構</a>
             <a href="./sample.html">HTML 嵌入範例</a>
@@ -237,7 +250,7 @@ function App() {
           {route.type === 'overview' && <Gallery settings={settings} navigate={navigate} />}
           {route.type === 'card' && (
             <CardEditor key={`${route.product.id}:${route.preset.key}`} product={route.product} preset={route.preset}
-              settings={settings[route.product.id]} status={status[route.product.id]}
+              settings={settings[route.product.id]} status={status[route.product.id]} onBack={returnToPreviousView}
               save={(display, reset) => save(route.product.id, display, reset)} />
           )}
           {route.type === 'missing' && (

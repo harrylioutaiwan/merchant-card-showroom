@@ -30,10 +30,11 @@ Hosted HTML → mountMerchantCard(container, props) → 同一個 ProductCard
 ```
 
 - 選 React、TypeScript、Vite 與 CSS Modules。React 統一總覽、編輯器與預覽資料流。TypeScript 的 discriminated union 表達商品的業務差異。CSS Modules 讓宿主可載入卡片樣式。代價是嵌入 bundle 隨附 React runtime。
-- 商品卡採 React 組合與 CSS Modules。照片輪播用 Pointer Events，影片使用原生 `dialog`，側欄收合用按鈕與 `aria-expanded`。直接使用瀏覽器能力可控制商城卡片版型並減少嵌入依賴，代價是要自行測試拖曳、觸控、鍵盤和焦點回復。
+- 商品卡採 React 組合與 CSS Modules，保留電商資料與各版型的渲染責任。輪播採 Embla，影片彈層採 Radix Dialog，側欄區塊採 Radix Collapsible。元件庫維護手勢、定位、收合與焦點行為，應用程式負責樣式、可見性與商品資料。引入這些互動依賴後，獨立嵌入 JS 由約 75 kB 增至約 99 kB gzip。 [Embla React](https://www.embla-carousel.com/docs/v8/get-started/react) [Radix Dialog](https://www.radix-ui.com/primitives/docs/components/dialog) [Radix Collapsible](https://www.radix-ui.com/primitives/docs/components/collapsible)
 - `kind` 描述業務情境，`layout` 描述排列。typed preset registry 只列可用路由和版型。用多款商品驗證共用邊界後，仍可保持靜態註冊。
 - 商品名稱、售價及促銷文案由商品目錄、定價或活動來源提供。作業用 catalog 模擬來源。編輯器管理哪些區塊會顯示。React state 是當前分頁的有效展示設定。
 - 依商品 ID 儲存 `{ version, settings }`，相同商品的方格及橫列共用。讀取驗證版本及欄位，舊版展示偏好會保留，舊版商品覆寫不生效。無效 JSON 或未知版本會回退預設，讀取本身保留原值。寫入失敗時保留分頁內狀態並提供可見提示。跨分頁同步留待後續。
+- 單卡編輯頁透過 Showroom 自己建立的瀏覽歷史返回上一頁。從外部直接開啟單卡時，返回會進入總覽。
 - `sample.html` 以 JS module 和 CSS 載入同一 React 元件。宿主傳入資料快照，因此使用情境可重現。實際部署用靜態檔，沒有伺服器端狀態。
 
 ## 編輯器的責任邊界
@@ -52,6 +53,6 @@ Hosted HTML → mountMerchantCard(container, props) → 同一個 ProductCard
 
 P0 先讓搜尋方格走完導覽、單卡調整、持久化、正式建置嵌入與提交。P1 用同商品的橫列檢查跨 layout 一致性，再用排行及限搶驗證業務欄位擴充。多出來的 UI 保留為商品卡範圍內的預覽寬度控制與示意 CTA。
 
-後續依補充截圖加入一張多媒體示例卡。照片支援滑鼠拖曳、觸控、鍵盤方向鍵與圓點。影片在點擊後才載入 YouTube，原生彈層可用關閉鍵或 Escape 離開。站外播放受影片擁有者設定影響，因此外部觀看入口保留在彈層。使用公開的抗敏牙膏影片作為播放器示例。 [Sensodyne TW 影片](https://www.youtube.com/watch?v=fyNzdn9yHVE) [YouTube 播放器參數](https://developers.google.com/youtube/player_parameters)
+後續依補充截圖加入一張多媒體示例卡。照片支援滑鼠拖曳、觸控、鍵盤方向鍵與圓點。影片在點擊後才載入 YouTube，影片彈層可用關閉鍵或 Escape 離開。站外播放受影片擁有者設定影響，因此外部觀看入口保留在彈層。使用公開的抗敏牙膏影片作為播放器示例。 [Sensodyne TW 影片](https://www.youtube.com/watch?v=fyNzdn9yHVE) [YouTube 播放器參數](https://developers.google.com/youtube/player_parameters)
 
 hover 操作、登入、真實購物車、API、倒數、商品詳情與動態 plugin loader 延後。當新卡片需要新增業務資料時，先擴充 `Product` union 和 variant adapter。等到有外部資料供應商時，再加入 runtime product schema。等到有多分頁編輯需求時，再定義事件同步、衝突規則和舊資料遷移。

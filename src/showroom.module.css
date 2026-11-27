@@ -115,6 +115,19 @@
 .editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(17rem, .67fr); min-height: 100%; }
 .preview, .settings { min-width: 0; padding: clamp(1rem, 2.5vw, 2rem); }
 .preview { border-right: 1px solid var(--line); }
+.editorBack {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin: 0 0 .65rem;
+  padding: .2rem 0;
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  font-size: .875rem;
+  font-weight: 700;
+}
+.editorBack:hover { text-decoration: underline; text-underline-offset: .2em; }
 .previewFrame {
   min-height: 20rem;
   display: grid;
