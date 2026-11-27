@@ -1,4 +1,4 @@
-import { useEffect, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { catalog } from './catalog.js';
 import { ProductCard, type CardAction } from './ProductCard.js';
@@ -141,6 +141,7 @@ function CardEditor({ product, preset, settings, status, save }: {
 }
 
 function App() {
+  const headerRef = useRef<HTMLElement>(null);
   const [search, setSearch] = useState(window.location.search);
   const [settings, setSettings] = useState<SettingsMap>(() =>
     Object.fromEntries(catalog.map(({ id }) => [id, readSettings(id)])),
@@ -148,6 +149,21 @@ function App() {
   const [status, setStatus] = useState<SaveStatus>({});
   const route = parseRoute(search);
   const activeView = route.type === 'card' ? route.preset.key : route.type === 'overview' ? 'all' : '';
+
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const workbenchRoot = header?.parentElement;
+    if (!header || !workbenchRoot) return;
+
+    const updateHeaderHeight = () => {
+      workbenchRoot.style.setProperty('--header-height', `${header.getBoundingClientRect().height}px`);
+    };
+
+    updateHeaderHeight();
+    const resizeObserver = new ResizeObserver(updateHeaderHeight);
+    resizeObserver.observe(header);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     const onPop = () => setSearch(window.location.search);
@@ -179,7 +195,7 @@ function App() {
 
   return (
     <>
-      <header className={styles.header}>
+      <header ref={headerRef} className={styles.header}>
         <div>
           <RouteLink navigate={navigate} href="./" className={styles.wordmark}>Merchant Card Showroom</RouteLink>
           <p>momo 商品卡研究</p>
